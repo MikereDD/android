@@ -53,3 +53,9 @@
 - Local/on-device STT options
 - Pluggable speech backends
 - Typezer∅ release/updater standard integration
+
+## Baseline verification
+
+- Android :app:assembleMinimalDebug — PASS
+- Wear OS :wear:assembleDebug — PASS
+- Verified on Netzach before HA-Verity code divergence
