@@ -80,8 +80,8 @@ internal fun WelcomeTemplate(
             Spacer(modifier = Modifier.weight(positionPercentage))
 
             Image(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_home_assistant_branding),
-                contentDescription = stringResource(commonR.string.home_assistant_branding_icon_content_description),
+                imageVector = ImageVector.vectorResource(R.drawable.ha_verity_launcher_foreground),
+                contentDescription = stringResource(R.string.ha_verity_branding_icon_content_description),
                 modifier = Modifier.size(ICON_SIZE),
             )
 

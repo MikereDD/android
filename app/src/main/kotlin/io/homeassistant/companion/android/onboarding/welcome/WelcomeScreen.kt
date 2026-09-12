@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.common.R as commonR
 import io.homeassistant.companion.android.common.compose.theme.HAThemeForPreview
 import io.homeassistant.companion.android.util.compose.HAPreviews
@@ -18,9 +19,9 @@ internal fun WelcomeScreen(
     val coroutineScope = rememberCoroutineScope()
 
     WelcomeTemplate(
-        title = stringResource(commonR.string.welcome_home_assistant_title),
-        details = stringResource(commonR.string.welcome_details),
-        primaryButtonText = stringResource(commonR.string.welcome_connect_to_ha),
+        title = stringResource(R.string.ha_verity_welcome_title),
+        details = stringResource(R.string.ha_verity_welcome_details),
+        primaryButtonText = stringResource(R.string.ha_verity_welcome_connect),
         onPrimaryClick = onConnectClick,
         secondaryButtonText = stringResource(commonR.string.welcome_learn_more),
         onSecondaryClick = { coroutineScope.launch { onLearnMoreClick() } },
