@@ -4,5 +4,7 @@
     <string name="ha_verity_voice_error_microphone_start">Microphone recording could not start</string>
     <string name="ha_verity_voice_error_microphone_capture">Microphone audio capture failed</string>
     <string name="ha_verity_voice_error_audio_upload">Audio could not be sent to Home Assistant</string>
-    <string name="ha_verity_voice_error_pipeline_start">Assist pipeline could not start</string></resources>
+    <string name="ha_verity_voice_error_pipeline_start">Assist pipeline could not start</string>    <string name="ha_verity_voice_error_stt_readiness">Speech-to-text did not become ready</string>
+</resources>
+
 

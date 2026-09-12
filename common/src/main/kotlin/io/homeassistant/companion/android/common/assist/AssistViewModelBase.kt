@@ -49,6 +49,7 @@ sealed interface AssistEvent {
 
     /** Signals that the pipeline has started processing and the UI can be shown */
     data object PipelineStarted : AssistEvent
+    data object SttStarted : AssistEvent
     data object PipelineEnded : AssistEvent
 
     /** Signals that the Assist UI should be dismissed without showing an error */
@@ -178,7 +179,7 @@ abstract class AssistViewModelBase(
                         onEvent(AssistEvent.PipelineStarted)
                     }
 
-                    AssistPipelineEventType.STT_START -> handleSttStart()
+                    AssistPipelineEventType.STT_START -> handleSttStart(onEvent)
                     AssistPipelineEventType.STT_END -> handleSttEnd(event.data as? AssistPipelineSttEnd, onEvent)
                     AssistPipelineEventType.INTENT_PROGRESS -> handleIntentProgress(
                         event.data as? AssistPipelineIntentProgress,
@@ -248,10 +249,11 @@ abstract class AssistViewModelBase(
         binaryHandlerId = data?.runnerData?.get("stt_binary_handler_id") as? Int
     }
 
-    private fun handleSttStart() {
+    private fun handleSttStart(onEvent: (AssistEvent) -> Unit) {
         binaryHandlerId?.let { id ->
             sttReady?.complete(id)
         }
+        onEvent(AssistEvent.SttStarted)
     }
 
     private fun handleSttEnd(data: AssistPipelineSttEnd?, onEvent: (AssistEvent) -> Unit) {
@@ -445,3 +447,4 @@ abstract class AssistViewModelBase(
         }
     }
 }
+

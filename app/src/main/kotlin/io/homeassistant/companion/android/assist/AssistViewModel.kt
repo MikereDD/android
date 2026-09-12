@@ -15,6 +15,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.homeassistant.companion.android.assist.ui.AssistMessage
 import io.homeassistant.companion.android.haverity.voice.HaVerityAssistDiagnostics
+import io.homeassistant.companion.android.haverity.voice.HaVeritySttReadinessWatchdog
 import io.homeassistant.companion.android.assist.ui.AssistUiPipeline
 import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.common.R as commonR
@@ -100,6 +101,7 @@ class AssistViewModel @AssistedInject constructor(
 
     private var startedFromWakeWord = false
     private var inactivityTimerJob: Job? = null
+    private val sttReadinessWatchdog = HaVeritySttReadinessWatchdog(viewModelScope)
 
     fun onCreate(
         hasPermission: Boolean,
@@ -455,6 +457,7 @@ class AssistViewModel @AssistedInject constructor(
                     _conversation.indexOf(message).takeIf { pos -> pos >= 0 }?.let { index ->
                         val isInput = event is AssistEvent.Message.Input
                         val isError = event is AssistEvent.Message.Error
+                        if (isError) sttReadinessWatchdog.cancel()
                         val eventMessage = HaVerityAssistDiagnostics.pipelineErrorStringRes(
                             event = event,
                             genericAssistError = app.getString(commonR.string.assist_error),
@@ -488,7 +491,26 @@ class AssistViewModel @AssistedInject constructor(
                     }
                 }
 
-                is AssistEvent.PipelineStarted -> { /* handled below */ }
+                is AssistEvent.PipelineStarted -> {
+                    if (isVoice) {
+                        sttReadinessWatchdog.arm {
+                            stopRecording(sendRecorded = false)
+                            val errorMessage = AssistMessage(
+                                app.getString(R.string.ha_verity_voice_error_stt_readiness),
+                                isInput = false,
+                                isError = true,
+                            )
+                            val placeholderIndex = _conversation.indexOfLast { it.isPlaceholder }
+                            if (placeholderIndex >= 0) {
+                                _conversation[placeholderIndex] = errorMessage
+                            } else {
+                                _conversation.add(errorMessage)
+                            }
+                        }
+                    }
+                }
+
+                is AssistEvent.SttStarted -> sttReadinessWatchdog.confirmReady()
 
                 is AssistEvent.PipelineEnded,
                 is AssistEvent.PlaybackFinished,
@@ -538,6 +560,7 @@ class AssistViewModel @AssistedInject constructor(
         stopPlayback()
     }
 }
+
 
 
 
