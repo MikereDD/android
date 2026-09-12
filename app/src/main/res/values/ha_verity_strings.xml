@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ha_verity_welcome_title">HA-Verity</string>
+    <string name="ha_verity_welcome_details">Your private Home Assistant companion.\n\nConnect to your Home Assistant server, control your home, use Assist, and keep things local-first.</string>
+    <string name="ha_verity_welcome_connect">Connect to Home Assistant</string>
+    <string name="ha_verity_branding_icon_content_description">HA-Verity logo</string>
+</resources>
