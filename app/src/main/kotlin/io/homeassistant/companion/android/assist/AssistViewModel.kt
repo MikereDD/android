@@ -14,7 +14,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.homeassistant.companion.android.assist.ui.AssistMessage
-import io.homeassistant.companion.android.haverity.voice.HaVerityVoiceException
+import io.homeassistant.companion.android.haverity.voice.HaVerityAssistDiagnostics
 import io.homeassistant.companion.android.assist.ui.AssistUiPipeline
 import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.common.R as commonR
@@ -413,19 +413,9 @@ class AssistViewModel @AssistedInject constructor(
                 onError = { error ->
                     stopRecording()
 
-                    val message = when (error) {
-                        is HaVerityVoiceException.InitializationFailed ->
-                            app.getString(R.string.ha_verity_voice_error_microphone_initialization)
-
-                        is HaVerityVoiceException.StartFailed ->
-                            app.getString(R.string.ha_verity_voice_error_microphone_start)
-
-                        is HaVerityVoiceException.ReadFailed ->
-                            app.getString(R.string.ha_verity_voice_error_microphone_capture)
-
-                        else ->
-                            app.getString(commonR.string.assist_error)
-                    }
+                    val message = app.getString(
+                        HaVerityAssistDiagnostics.recorderErrorStringRes(error),
+                    )
 
                     _conversation.add(
                         AssistMessage(message, isInput = false, isError = true),
@@ -465,8 +455,12 @@ class AssistViewModel @AssistedInject constructor(
                     _conversation.indexOf(message).takeIf { pos -> pos >= 0 }?.let { index ->
                         val isInput = event is AssistEvent.Message.Input
                         val isError = event is AssistEvent.Message.Error
+                        val eventMessage = HaVerityAssistDiagnostics.pipelineErrorStringRes(
+                            event = event,
+                            genericAssistError = app.getString(commonR.string.assist_error),
+                        )?.let { app.getString(it) } ?: event.message.trim()
                         _conversation[index] = message.copy(
-                            message = event.message.trim(),
+                            message = eventMessage,
                             isInput = isInput,
                             isError = isError,
                         )
@@ -544,5 +538,6 @@ class AssistViewModel @AssistedInject constructor(
         stopPlayback()
     }
 }
+
 
 
