@@ -14,7 +14,9 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.homeassistant.companion.android.assist.ui.AssistMessage
+import io.homeassistant.companion.android.haverity.voice.HaVerityVoiceException
 import io.homeassistant.companion.android.assist.ui.AssistUiPipeline
+import io.homeassistant.companion.android.R
 import io.homeassistant.companion.android.common.R as commonR
 import io.homeassistant.companion.android.common.assist.AssistAudioStrategy
 import io.homeassistant.companion.android.common.assist.AssistEvent
@@ -408,10 +410,25 @@ class AssistViewModel @AssistedInject constructor(
         if (!recorderProactive) {
             audioStrategy.requestFocus()
             setupRecorder(
-                onError = {
+                onError = { error ->
                     stopRecording()
+
+                    val message = when (error) {
+                        is HaVerityVoiceException.InitializationFailed ->
+                            app.getString(R.string.ha_verity_voice_error_microphone_initialization)
+
+                        is HaVerityVoiceException.StartFailed ->
+                            app.getString(R.string.ha_verity_voice_error_microphone_start)
+
+                        is HaVerityVoiceException.ReadFailed ->
+                            app.getString(R.string.ha_verity_voice_error_microphone_capture)
+
+                        else ->
+                            app.getString(commonR.string.assist_error)
+                    }
+
                     _conversation.add(
-                        AssistMessage(app.getString(commonR.string.assist_error), isInput = false, isError = true),
+                        AssistMessage(message, isInput = false, isError = true),
                     )
                 },
             )
@@ -527,3 +544,5 @@ class AssistViewModel @AssistedInject constructor(
         stopPlayback()
     }
 }
+
+
