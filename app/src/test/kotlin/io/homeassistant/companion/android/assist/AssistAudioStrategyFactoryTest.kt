@@ -3,8 +3,8 @@ package io.homeassistant.companion.android.assist
 import android.content.Context
 import android.media.AudioManager
 import io.homeassistant.companion.android.assist.wakeword.WakeWordListenerFactory
-import io.homeassistant.companion.android.common.assist.DefaultAssistAudioStrategy
 import io.homeassistant.companion.android.common.util.VoiceAudioRecorder
+import io.homeassistant.companion.android.haverity.voice.HaVerityAssistAudioStrategy
 import io.homeassistant.companion.android.settings.assist.AssistConfigManager
 import io.mockk.every
 import io.mockk.mockk
@@ -32,14 +32,15 @@ class AssistAudioStrategyFactoryTest {
             voiceAudioRecorder = voiceAudioRecorder,
             wakeWordListenerFactory = wakeWordListenerFactory,
             assistConfigManager = assistConfigManager,
+            haVerityVoiceAudioRecorder = mockk(relaxed = true),
         )
     }
 
     @Test
-    fun `Given no wake word phrase When create called Then returns DefaultAssistAudioStrategy`() {
+    fun `Given no wake word phrase When create called Then returns HaVerityAssistAudioStrategy`() {
         val strategy = factory.create(context = context, wakeWordPhrase = null)
 
-        assertInstanceOf(DefaultAssistAudioStrategy::class.java, strategy)
+        assertInstanceOf(HaVerityAssistAudioStrategy::class.java, strategy)
     }
 
     @Test

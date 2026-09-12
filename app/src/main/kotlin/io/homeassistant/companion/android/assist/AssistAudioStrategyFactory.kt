@@ -5,8 +5,9 @@ import androidx.core.content.getSystemService
 import io.homeassistant.companion.android.assist.service.AssistVoiceInteractionService
 import io.homeassistant.companion.android.assist.wakeword.WakeWordListenerFactory
 import io.homeassistant.companion.android.common.assist.AssistAudioStrategy
-import io.homeassistant.companion.android.common.assist.DefaultAssistAudioStrategy
 import io.homeassistant.companion.android.common.util.VoiceAudioRecorder
+import io.homeassistant.companion.android.haverity.voice.HaVerityAssistAudioStrategy
+import io.homeassistant.companion.android.haverity.voice.HaVerityVoiceAudioRecorder
 import io.homeassistant.companion.android.settings.assist.AssistConfigManager
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class AssistAudioStrategyFactory @Inject constructor(
     private val voiceAudioRecorder: VoiceAudioRecorder,
     private val wakeWordListenerFactory: WakeWordListenerFactory,
     private val assistConfigManager: AssistConfigManager,
+    private val haVerityVoiceAudioRecorder: HaVerityVoiceAudioRecorder,
 ) {
 
     /**
@@ -29,7 +31,7 @@ class AssistAudioStrategyFactory @Inject constructor(
      * automatically resumes the background wake word service via
      * [AssistVoiceInteractionService.resumeListening].
      *
-     * When [wakeWordPhrase] is null, creates a [DefaultAssistAudioStrategy] that streams audio
+     * When [wakeWordPhrase] is null, creates a [HaVerityAssistAudioStrategy] that streams audio
      * directly to the pipeline with audio focus management.
      *
      * @param context Used to obtain the system [android.media.AudioManager] and to resume the
@@ -51,8 +53,8 @@ class AssistAudioStrategyFactory @Inject constructor(
             },
         )
     } else {
-        DefaultAssistAudioStrategy(
-            voiceAudioRecorder = voiceAudioRecorder,
+        HaVerityAssistAudioStrategy(
+            recorder = haVerityVoiceAudioRecorder,
             audioManager = context.getSystemService(),
         )
     }
